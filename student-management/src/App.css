@@ -25,12 +25,6 @@
   }
 }
 
-.card {
-  padding: 2em;
-  background-color: #fff; /* Card background color */
-  border-radius: 8px; /* Rounded corners */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-}
 
 .read-the-docs {
   color: #888;
