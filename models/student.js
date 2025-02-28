@@ -40,7 +40,19 @@ studentSchema.pre("save", async function(next) {
     } catch (error) {
         next(error);
     }
-});
+}
+// studentSchema.pre('save', async function(next) {
+//   try {
+//       const course = await mongoose.model('Course').findOne({ name: this.courseName });
+//       if (!course) {
+//           throw new Error(`Course "${this.courseName}" does not exist`);
+//       }
+//       next();
+//   } catch (error) {
+//       next(error);
+//   }
+// });
+);
 
     module.exports = mongoose.model("student", studentSchema);
 
