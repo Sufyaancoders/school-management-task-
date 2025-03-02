@@ -25,6 +25,18 @@ function Students() {
         }
     };
     useEffect(() => {
+      // Create event listener for course updates
+      const handleCourseUpdate = () => {
+          fetchStudents();
+      };
+
+      window.addEventListener('courseUpdated', handleCourseUpdate);
+
+      return () => {
+          window.removeEventListener('courseUpdated', handleCourseUpdate);
+      };
+  }, []);
+    useEffect(() => {
         fetchCourses();
         fetchStudents();
   
