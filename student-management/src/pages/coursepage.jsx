@@ -22,6 +22,7 @@ function Courses() {
         console.error("Error fetching courses:", error);
       }
     };
+
   // In your coursepage.jsx where you handle course updates
 // const handleUpdateCourse = async (courseId, updatedData) => {
 //   try {
@@ -53,20 +54,12 @@ function Courses() {
       e.preventDefault();
       try {
         if (isEditing) {
-          // Get the old course data before update
-          const oldCourse = courses.find(course => course._id === editId);
-          
-          // Send both old and new names in the request
           await axios.put(
             `http://localhost:5000/api/courses/${editId}`,
-            {
-              ...formData,
-              oldName: oldCourse.name // Send the old name
-            }
+            formData
           );
-          
-          // Dispatch the courseUpdated event
-          window.dispatchEvent(new Event('courseUpdated'));
+          // Dispatch custom event
+          window.dispatchEvent(new CustomEvent('courseUpdated'));
         } else {
           await axios.post("http://localhost:5000/api/courses", formData);
         }
@@ -185,7 +178,8 @@ function Courses() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {courses.map((course) => (
+                {
+                courses.map((course) => (
                   <tr key={course._id}>
                     <td className="px-6 py-4 whitespace-nowrap">{course.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -195,7 +189,7 @@ function Courses() {
                       {course.HOD}
                     </td>
                
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-8 whitespace-nowrap">
                       <button
                         onClick={() => handleEdit(course)}
                         className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 rounded mr-2"

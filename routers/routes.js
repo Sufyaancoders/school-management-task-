@@ -28,19 +28,49 @@ router.get("/courses", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+//<<---------when course name is updated it change all the student course name-------------->>
 // Update Course
-router.put("/courses/:id", async (req, res) => {
-    try {
-      const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true,
-      });
-      if (!course) return res.status(404).json({ error: "course not found" });
-      res.json(course);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
+const updateCourse = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name: newName, branch, HOD } = req.body;
+    
+    // First find the course to get the old name
+    const oldCourse = await Course.findById(id);
+    if (!oldCourse) {
+      return res.status(404).json({ error: "Course not found" });
     }
-  });
+
+    // Update the course
+    const updatedCourse = await Course.findByIdAndUpdate(
+      id,
+      { name: newName, branch, HOD },
+      { new: true }
+    );
+
+    // Update all students who have this course
+    const updateResult = await Student.updateMany(
+      //Finds all student documents where courseName matches the old course name
+      { courseName: oldCourse.name },
+      //$set is a MongoDB update operator that replaces the value of a field with a specified value.
+      //  It's commonly used to update specific fields in a document without affecting other fields.
+      { $set: { courseName: newName } }
+    );
+
+    console.log(`Updated ${updateResult.modifiedCount} students`);
+
+    res.json({
+      course: updatedCourse,
+      studentsUpdated: updateResult.modifiedCount
+    });
+  } catch (error) {
+    console.error("Error updating course:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+router.put("/courses/:id", updateCourse);
+//<-------------------------------------------->>
 // Delete Course
 router.delete("/courses/:id", async (req, res) => {
     try {
